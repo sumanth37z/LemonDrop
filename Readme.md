@@ -11,7 +11,7 @@ A modern, fully functional disposable email service built with Next.js, Cloudfla
 
 ## 🌐 Live Demo
 
-[lemondrop.qzz.io](https://lemondrop.qzz.io)
+https://lemon-drop-op.vercel.app/
 
 ---
 

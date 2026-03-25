@@ -50,6 +50,64 @@ function formatFullDate(ts) {
   });
 }
 
+function renderEmailBody(body) {
+  if (!body) return "";
+
+  const isHTML = /<[a-z][\s\S]*>/i.test(body);
+
+  const baseStyle = `
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px; line-height: 1.6; color: #e0e0e0;
+        background: #0d0d1a; margin: 0; padding: 16px;
+        word-wrap: break-word; overflow-wrap: break-word;
+      }
+      a { color: #facc15; text-decoration: underline; }
+      a:hover { color: #fde047; }
+      img { max-width: 100% !important; height: auto !important; border-radius: 4px; display: block; }
+      table { max-width: 100% !important; border-collapse: collapse; }
+      td, th { padding: 4px 8px; }
+      pre, code {
+        white-space: pre-wrap; overflow-x: auto;
+        background: #1a1a2e; padding: 8px; border-radius: 4px; font-size: 13px;
+      }
+      blockquote { border-left: 3px solid #333; padding-left: 12px; margin-left: 0; color: #999; }
+      h1, h2, h3, h4, h5, h6 { color: #fff; margin: 16px 0 8px; }
+      hr { border: none; border-top: 1px solid #333; margin: 16px 0; }
+      ul, ol { padding-left: 20px; }
+      p { margin: 8px 0; }
+      .gmail_quote { border-left: 2px solid #333; padding-left: 12px; color: #888; }
+    </style>
+  `;
+
+  if (isHTML) {
+    return `<!DOCTYPE html><html><head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      ${baseStyle}
+      </head><body>${body}</body></html>`;
+  } else {
+    const escaped = body
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(
+        /(https?:\/\/[^\s<]+)/g,
+        '<a href="$1" target="_blank" rel="noopener">$1</a>'
+      )
+      .replace(/\n/g, "<br>");
+
+    return `<!DOCTYPE html><html><head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      ${baseStyle}
+      <style>body{font-family:'Courier New',monospace;line-height:1.8}</style>
+      </head><body>${escaped}</body></html>`;
+  }
+}
+
 export default function Home() {
   const [address, setAddress] = useState("");
   const [emails, setEmails] = useState([]);
@@ -119,62 +177,19 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  function deleteEmail(id, e) {
+  async function deleteEmail(id, e) {
     if (e) e.stopPropagation();
     setEmails((prev) => prev.filter((em) => em.id !== id));
     if (selectedEmail && selectedEmail.id === id) {
       setSelectedEmail(null);
       setView("inbox");
     }
-  }
-
-  function renderEmailBody(body) {
-    if (!body) return "";
-    const isHTML = /<[a-z][\s\S]*>/i.test(body);
-
-    if (isHTML) {
-      return `<!DOCTYPE html><html><head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <style>
-          body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-          font-size:14px;line-height:1.6;color:#e0e0e0;background:#0d0d1a;
-          margin:0;padding:16px;word-wrap:break-word}
-          a{color:#facc15}img{max-width:100%;height:auto}
-          table{max-width:100%}
-        </style></head><body>${body}</body></html>`;
-    } else {
-      const escaped = body
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(
-          /(https?:\/\/[^\s]+)/g,
-          '<a href="$1" target="_blank">$1</a>'
-        )
-        .replace(/\n/g, "<br>");
-
-      return `<!DOCTYPE html><html><head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <style>
-          body{font-family:monospace;font-size:14px;line-height:1.8;
-          color:#e0e0e0;background:#0d0d1a;margin:0;padding:16px;
-          word-wrap:break-word}a{color:#facc15}
-        </style></head><body>${escaped}</body></html>`;
+    try {
+      await fetch(`/api/delete/${id}`, { method: "DELETE" });
+    } catch (err) {
+      console.log("Delete error:", err);
     }
   }
-
-  useEffect(() => {
-    if (selectedEmail && iframeRef.current) {
-      const doc = iframeRef.current.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write(renderEmailBody(selectedEmail.body));
-        doc.close();
-      }
-    }
-  }, [selectedEmail]);
 
   if (!ready) {
     return (
@@ -189,19 +204,13 @@ export default function Home() {
     );
   }
 
-  // ════════════════════════════════════
-  // DETAIL VIEW (Mobile + Desktop right panel)
-  // ════════════════════════════════════
   const detailPanel = selectedEmail ? (
     <div className="flex flex-col h-full">
-      {/* Detail Header */}
       <div className="p-4 border-b border-white/5 flex-shrink-0">
-        {/* Back Button */}
         <button
           onClick={goBack}
           className="flex items-center gap-2 text-yellow-400 text-sm mb-4
-                     hover:text-yellow-300 active:scale-95 transition
-                     md:hidden"
+                     hover:text-yellow-300 active:scale-95 transition md:hidden"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none"
             viewBox="0 0 24 24" stroke="currentColor">
@@ -211,15 +220,13 @@ export default function Home() {
           Back to Inbox
         </button>
 
-        {/* Subject */}
         <h2 className="text-lg md:text-xl font-bold text-white mb-4 break-words">
           {selectedEmail.subject || "(no subject)"}
         </h2>
 
-        {/* Sender */}
         <div className="flex items-start gap-3">
           <div
-            className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center 
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center
                        justify-center text-white text-sm md:text-lg font-bold flex-shrink-0"
             style={{ backgroundColor: getAvatarColor(selectedEmail.sender) }}
           >
@@ -250,14 +257,14 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Email Body */}
       <div className="flex-1 overflow-hidden">
         <iframe
           ref={iframeRef}
           title="Email Content"
-          className="w-full h-full border-0"
-          sandbox="allow-same-origin"
+          className="w-full h-full border-0 bg-[#0d0d1a]"
+          sandbox="allow-same-origin allow-popups"
           referrerPolicy="no-referrer"
+          srcdoc={renderEmailBody(selectedEmail.body)}
         />
       </div>
     </div>
@@ -274,10 +281,9 @@ export default function Home() {
   return (
     <div className="h-screen bg-[#0a0a1a] text-white flex flex-col overflow-hidden">
 
-      {/* ═══ TOP BAR ═══ */}
+      {/* TOP BAR */}
       <div className="bg-[#111118] border-b border-yellow-500/10 px-3 md:px-4 py-3 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
-          {/* Logo */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
             <span className="text-xl md:text-2xl">🍋</span>
             <span className="text-base md:text-xl font-bold">
@@ -286,12 +292,11 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center gap-1.5">
             <button
               onClick={newAddr}
               className="bg-orange-500/10 hover:bg-orange-500/20 text-orange-400
-                         px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg text-xs md:text-sm 
+                         px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg text-xs md:text-sm
                          transition border border-orange-500/20 active:scale-95"
             >
               🔄 <span className="hidden sm:inline">New</span>
@@ -299,7 +304,7 @@ export default function Home() {
             <button
               onClick={checkInbox}
               className="bg-lime-500/10 hover:bg-lime-500/20 text-lime-400
-                         px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg text-xs md:text-sm 
+                         px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg text-xs md:text-sm
                          transition border border-lime-500/20 active:scale-95"
             >
               {checking ? "⏳" : "📥"} <span className="hidden sm:inline">Refresh</span>
@@ -307,13 +312,12 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Email Address Bar */}
         <div className="flex items-center gap-2 mt-2">
           <div
             onClick={copy}
-            className="flex-1 bg-[#0a0a12] border border-yellow-500/20 rounded-lg 
+            className="flex-1 bg-[#0a0a12] border border-yellow-500/20 rounded-lg
                        px-3 py-2 font-mono text-yellow-300 text-xs md:text-sm
-                       cursor-pointer hover:border-yellow-500/40 transition 
+                       cursor-pointer hover:border-yellow-500/40 transition
                        truncate select-all"
           >
             {address}
@@ -329,7 +333,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ═══ STATUS BAR ═══ */}
+      {/* STATUS BAR */}
       <div className="bg-[#0d0d16] border-b border-white/5 px-3 py-1 flex-shrink-0">
         <p className="text-gray-500 text-[10px] md:text-xs">
           {checking
@@ -338,17 +342,16 @@ export default function Home() {
         </p>
       </div>
 
-      {/* ═══ MAIN CONTENT ═══ */}
+      {/* MAIN CONTENT */}
       <div className="flex-1 flex overflow-hidden">
 
-        {/* ─── INBOX LIST ─── */}
+        {/* INBOX LIST */}
         <div
-          className={`w-full md:w-[340px] lg:w-[380px] md:min-w-[340px] 
-                      md:border-r border-white/5 flex flex-col bg-[#0a0a14] 
+          className={`w-full md:w-[340px] lg:w-[380px] md:min-w-[340px]
+                      md:border-r border-white/5 flex flex-col bg-[#0a0a14]
                       overflow-hidden
                       ${view === "detail" ? "hidden md:flex" : "flex"}`}
         >
-          {/* Inbox Header */}
           <div className="p-3 border-b border-white/5 flex items-center justify-between flex-shrink-0">
             <h2 className="text-sm font-bold text-gray-300">
               📥 Inbox
@@ -360,7 +363,6 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Email List */}
           <div className="flex-1 overflow-y-auto">
             {emails.length === 0 ? (
               <div className="p-6 md:p-8 text-center">
@@ -372,9 +374,7 @@ export default function Home() {
                   Send an email to your address above
                 </p>
                 <div className="bg-[#0d0d1a] rounded-lg p-3 md:p-4 text-left text-[11px] md:text-xs text-gray-500 space-y-1">
-                  <p className="text-yellow-400/70 font-bold mb-1.5">
-                    Quick test:
-                  </p>
+                  <p className="text-yellow-400/70 font-bold mb-1.5">Quick test:</p>
                   <p>1. Copy your email above</p>
                   <p>2. Send email from Gmail</p>
                   <p>3. It appears here automatically</p>
@@ -392,16 +392,14 @@ export default function Home() {
                                : "hover:bg-yellow-400/5"
                              }`}
                 >
-                  {/* Avatar */}
                   <div
-                    className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center 
+                    className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center
                                justify-center text-white text-xs md:text-sm font-bold flex-shrink-0"
                     style={{ backgroundColor: getAvatarColor(email.sender) }}
                   >
                     {getInitials(email.sender)}
                   </div>
 
-                  {/* Content */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-xs md:text-sm font-semibold text-gray-200 truncate">
@@ -421,10 +419,9 @@ export default function Home() {
                     </p>
                   </div>
 
-                  {/* Delete */}
                   <button
                     onClick={(e) => deleteEmail(email.id, e)}
-                    className="text-gray-600 hover:text-red-400 p-1.5 rounded 
+                    className="text-gray-600 hover:text-red-400 p-1.5 rounded
                                transition flex-shrink-0 hover:bg-red-400/10"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 md:h-4 md:w-4"
@@ -439,7 +436,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ─── EMAIL DETAIL ─── */}
+        {/* EMAIL DETAIL */}
         <div
           className={`flex-1 flex flex-col bg-[#0a0a12] overflow-hidden
                       ${view === "inbox" ? "hidden md:flex" : "flex"}`}
@@ -448,7 +445,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ═══ FOOTER ═══ */}
+      {/* FOOTER */}
       <div className="bg-[#0d0d16] border-t border-white/5 px-3 py-1.5 flex-shrink-0">
         <p className="text-gray-700 text-[10px] md:text-xs text-center">
           🍋 LemonDrop — No signup • No card • 100% Free

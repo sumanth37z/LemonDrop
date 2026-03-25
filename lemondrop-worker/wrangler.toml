@@ -1,0 +1,12 @@
+name = "lemondrop-worker"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lemondrop-db"
+database_id = "a43b61f5-b7a5-4087-8717-73a581b9bc5d"
+
+[triggers]
+crons = ["0 * * * *"]

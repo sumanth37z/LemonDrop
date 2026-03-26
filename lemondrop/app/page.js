@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
+import Icon from "../components/Icon";
 
 const DOMAIN = "lemondrop.qzz.io";
 
@@ -42,68 +43,43 @@ function formatDate(ts) {
 
 function formatFullDate(ts) {
   return new Date(ts).toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+    month: "short", day: "numeric", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
   });
 }
 
 function renderEmailBody(body) {
   if (!body) return "";
-
   const isHTML = /<[a-z][\s\S]*>/i.test(body);
 
-  const baseStyle = `
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 14px; line-height: 1.6; color: #e0e0e0;
-        background: #0d0d1a; margin: 0; padding: 16px;
-        word-wrap: break-word; overflow-wrap: break-word;
-      }
-      a { color: #facc15; text-decoration: underline; }
-      a:hover { color: #fde047; }
-      img { max-width: 100% !important; height: auto !important; border-radius: 4px; display: block; }
-      table { max-width: 100% !important; border-collapse: collapse; }
-      td, th { padding: 4px 8px; }
-      pre, code {
-        white-space: pre-wrap; overflow-x: auto;
-        background: #1a1a2e; padding: 8px; border-radius: 4px; font-size: 13px;
-      }
-      blockquote { border-left: 3px solid #333; padding-left: 12px; margin-left: 0; color: #999; }
-      h1, h2, h3, h4, h5, h6 { color: #fff; margin: 16px 0 8px; }
-      hr { border: none; border-top: 1px solid #333; margin: 16px 0; }
-      ul, ol { padding-left: 20px; }
-      p { margin: 8px 0; }
-      .gmail_quote { border-left: 2px solid #333; padding-left: 12px; color: #888; }
-    </style>
-  `;
+  const baseStyle = `<style>
+    *{box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    font-size:14px;line-height:1.6;color:#e0e0e0;background:#0d0d1a;
+    margin:0;padding:16px;word-wrap:break-word;overflow-wrap:break-word}
+    a{color:#facc15;text-decoration:underline}a:hover{color:#fde047}
+    img{max-width:100%!important;height:auto!important;border-radius:4px;display:block}
+    table{max-width:100%!important;border-collapse:collapse}td,th{padding:4px 8px}
+    pre,code{white-space:pre-wrap;overflow-x:auto;background:#1a1a2e;padding:8px;border-radius:4px;font-size:13px}
+    blockquote{border-left:3px solid #333;padding-left:12px;margin-left:0;color:#999}
+    h1,h2,h3,h4,h5,h6{color:#fff;margin:16px 0 8px}
+    hr{border:none;border-top:1px solid #333;margin:16px 0}
+    ul,ol{padding-left:20px}p{margin:8px 0}
+    .gmail_quote{border-left:2px solid #333;padding-left:12px;color:#888}
+  </style>`;
 
   if (isHTML) {
-    return `<!DOCTYPE html><html><head>
-      <meta charset="utf-8">
+    return `<!DOCTYPE html><html><head><meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
-      ${baseStyle}
-      </head><body>${body}</body></html>`;
+      ${baseStyle}</head><body>${body}</body></html>`;
   } else {
     const escaped = body
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(
-        /(https?:\/\/[^\s<]+)/g,
-        '<a href="$1" target="_blank" rel="noopener">$1</a>'
-      )
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
       .replace(/\n/g, "<br>");
-
-    return `<!DOCTYPE html><html><head>
-      <meta charset="utf-8">
+    return `<!DOCTYPE html><html><head><meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
-      ${baseStyle}
-      <style>body{font-family:'Courier New',monospace;line-height:1.8}</style>
+      ${baseStyle}<style>body{font-family:'Courier New',monospace;line-height:1.8}</style>
       </head><body>${escaped}</body></html>`;
   }
 }
@@ -143,9 +119,7 @@ export default function Home() {
     if (!address) return;
     setChecking(true);
     try {
-      const res = await fetch(
-        `/api/emails/${encodeURIComponent(address)}`
-      );
+      const res = await fetch(`/api/emails/${encodeURIComponent(address)}`);
       const data = await res.json();
       if (Array.isArray(data)) setEmails(data);
     } catch (e) {
@@ -195,8 +169,8 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-[#0a0a1a] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-4xl mb-4">🍋</p>
-          <p className="text-yellow-400 text-lg animate-pulse">
+          <Icon name="lemon" size={48} className="text-yellow-400 mb-4" />
+          <p className="text-yellow-400 text-lg animate-pulse font-display">
             Loading LemonDrop...
           </p>
         </div>
@@ -212,15 +186,11 @@ export default function Home() {
           className="flex items-center gap-2 text-yellow-400 text-sm mb-4
                      hover:text-yellow-300 active:scale-95 transition md:hidden"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Inbox
+          <Icon name="back" size={18} />
+          <span className="font-display">Back to Inbox</span>
         </button>
 
-        <h2 className="text-lg md:text-xl font-bold text-white mb-4 break-words">
+        <h2 className="text-lg md:text-xl font-bold text-white mb-4 break-words font-display">
           {selectedEmail.subject || "(no subject)"}
         </h2>
 
@@ -236,23 +206,22 @@ export default function Home() {
             <p className="text-sm font-bold text-gray-200 break-all">
               {selectedEmail.sender}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
-              To: {selectedEmail.recipient}
-            </p>
-            <p className="text-xs text-gray-500">
-              {formatFullDate(selectedEmail.received_at)}
-            </p>
+            <div className="flex items-center gap-1.5 mt-1 text-gray-500">
+              <Icon name="user" size={12} />
+              <p className="text-xs">To: {selectedEmail.recipient}</p>
+            </div>
+            <div className="flex items-center gap-1.5 mt-0.5 text-gray-500">
+              <Icon name="clock" size={12} />
+              <p className="text-xs">{formatFullDate(selectedEmail.received_at)}</p>
+            </div>
           </div>
           <button
             onClick={(e) => deleteEmail(selectedEmail.id, e)}
             className="text-gray-500 hover:text-red-400 p-2 rounded-lg
                        hover:bg-red-400/10 transition flex-shrink-0"
+            title="Delete"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
+            <Icon name="delete" size={18} />
           </button>
         </div>
       </div>
@@ -271,8 +240,8 @@ export default function Home() {
   ) : (
     <div className="hidden md:flex flex-1 items-center justify-center">
       <div className="text-center p-8">
-        <p className="text-5xl mb-4">🍋</p>
-        <p className="text-gray-400 text-lg mb-2">Select an email to read</p>
+        <Icon name="inbox" size={64} className="text-gray-700 mb-4" />
+        <p className="text-gray-400 text-lg mb-2 font-display">Select an email to read</p>
         <p className="text-gray-600 text-sm">Click any email in the inbox</p>
       </div>
     </div>
@@ -285,8 +254,8 @@ export default function Home() {
       <div className="bg-[#111118] border-b border-yellow-500/10 px-3 md:px-4 py-3 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <span className="text-xl md:text-2xl">🍋</span>
-            <span className="text-base md:text-xl font-bold">
+            <Icon name="lemon" size={24} className="text-yellow-400" />
+            <span className="text-base md:text-xl font-bold font-display">
               <span className="text-yellow-400">Lemon</span>
               <span className="text-yellow-200">Drop</span>
             </span>
@@ -297,17 +266,24 @@ export default function Home() {
               onClick={newAddr}
               className="bg-orange-500/10 hover:bg-orange-500/20 text-orange-400
                          px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg text-xs md:text-sm
-                         transition border border-orange-500/20 active:scale-95"
+                         transition border border-orange-500/20 active:scale-95
+                         flex items-center gap-1.5"
             >
-              🔄 <span className="hidden sm:inline">New</span>
+              <Icon name="newmail" size={14} />
+              <span className="hidden sm:inline">New</span>
             </button>
             <button
               onClick={checkInbox}
               className="bg-lime-500/10 hover:bg-lime-500/20 text-lime-400
                          px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg text-xs md:text-sm
-                         transition border border-lime-500/20 active:scale-95"
+                         transition border border-lime-500/20 active:scale-95
+                         flex items-center gap-1.5"
             >
-              {checking ? "⏳" : "📥"} <span className="hidden sm:inline">Refresh</span>
+              {checking
+                ? <Icon name="spinner" size={14} />
+                : <Icon name="refresh" size={14} />
+              }
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
@@ -326,23 +302,33 @@ export default function Home() {
             onClick={copy}
             className="bg-yellow-400 hover:bg-yellow-300 text-black
                        px-3 py-2 rounded-lg text-xs md:text-sm font-bold
-                       transition active:scale-95 whitespace-nowrap flex-shrink-0"
+                       transition active:scale-95 whitespace-nowrap flex-shrink-0
+                       flex items-center gap-1.5"
           >
-            {copied ? "✅ Copied!" : "📋 Copy"}
+            {copied
+              ? <><Icon name="check" size={14} /> Copied!</>
+              : <><Icon name="copy" size={14} /> Copy</>
+            }
           </button>
         </div>
       </div>
 
       {/* STATUS BAR */}
       <div className="bg-[#0d0d16] border-b border-white/5 px-3 py-1 flex-shrink-0">
-        <p className="text-gray-500 text-[10px] md:text-xs">
+        <div className="flex items-center gap-1.5">
           {checking
-            ? "🍋 Checking for new emails..."
-            : `✅ ${emails.length} email${emails.length !== 1 ? "s" : ""} • Auto-refreshes every 5s`}
-        </p>
+            ? <Icon name="spinner" size={10} className="text-yellow-400" />
+            : <Icon name="shield" size={10} className="text-green-500" />
+          }
+          <p className="text-gray-500 text-[10px] md:text-xs">
+            {checking
+              ? "Checking for new emails..."
+              : `${emails.length} email${emails.length !== 1 ? "s" : ""} • Auto-refreshes every 5s • Auto-deletes after 1h`}
+          </p>
+        </div>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <div className="flex-1 flex overflow-hidden">
 
         {/* INBOX LIST */}
@@ -352,11 +338,12 @@ export default function Home() {
                       overflow-hidden
                       ${view === "detail" ? "hidden md:flex" : "flex"}`}
         >
-          <div className="p-3 border-b border-white/5 flex items-center justify-between flex-shrink-0">
-            <h2 className="text-sm font-bold text-gray-300">
-              📥 Inbox
+          <div className="p-3 border-b border-white/5 flex items-center gap-2 flex-shrink-0">
+            <Icon name="inbox" size={16} className="text-yellow-400" />
+            <h2 className="text-sm font-bold text-gray-300 font-display">
+              Inbox
               {emails.length > 0 && (
-                <span className="ml-2 bg-yellow-400/20 text-yellow-400 text-xs px-2 py-0.5 rounded-full">
+                <span className="ml-2 bg-yellow-400/20 text-yellow-400 text-xs px-2 py-0.5 rounded-full font-sans">
                   {emails.length}
                 </span>
               )}
@@ -366,19 +353,13 @@ export default function Home() {
           <div className="flex-1 overflow-y-auto">
             {emails.length === 0 ? (
               <div className="p-6 md:p-8 text-center">
-                <p className="text-4xl md:text-5xl mb-3">🍋</p>
-                <p className="text-gray-400 font-medium mb-2 text-sm md:text-base">
+                <Icon name="inbox" size={48} className="text-gray-700 mb-3" />
+                <p className="text-gray-400 font-medium mb-2 text-sm md:text-base font-display">
                   No emails yet
                 </p>
                 <p className="text-gray-600 text-xs md:text-sm mb-4">
                   Send an email to your address above
                 </p>
-                <div className="bg-[#0d0d1a] rounded-lg p-3 md:p-4 text-left text-[11px] md:text-xs text-gray-500 space-y-1">
-                  <p className="text-yellow-400/70 font-bold mb-1.5">Quick test:</p>
-                  <p>1. Copy your email above</p>
-                  <p>2. Send email from Gmail</p>
-                  <p>3. It appears here automatically</p>
-                </div>
               </div>
             ) : (
               emails.map((email) => (
@@ -423,12 +404,9 @@ export default function Home() {
                     onClick={(e) => deleteEmail(email.id, e)}
                     className="text-gray-600 hover:text-red-400 p-1.5 rounded
                                transition flex-shrink-0 hover:bg-red-400/10"
+                    title="Delete"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 md:h-4 md:w-4"
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <Icon name="delete" size={15} />
                   </button>
                 </div>
               ))
@@ -447,9 +425,12 @@ export default function Home() {
 
       {/* FOOTER */}
       <div className="bg-[#0d0d16] border-t border-white/5 px-3 py-1.5 flex-shrink-0">
-        <p className="text-gray-700 text-[10px] md:text-xs text-center">
-          🍋 LemonDrop — No signup • No card • 100% Free
-        </p>
+        <div className="flex items-center justify-center gap-1.5">
+          <Icon name="lemon" size={12} className="text-yellow-400/50" />
+          <p className="text-gray-700 text-[10px] md:text-xs font-display">
+            LemonDrop — No signup • No card • 100% Free
+          </p>
+        </div>
       </div>
     </div>
   );

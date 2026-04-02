@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 import { Silkscreen } from "next/font/google";
 
 const silkscreen = Silkscreen({

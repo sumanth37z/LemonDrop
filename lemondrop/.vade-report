@@ -1,37 +1,56 @@
-## Vercel Web Analytics Configuration
+# Vercel Speed Insights Installation Report
 
-Successfully configured Vercel Web Analytics for the LemonDrop Next.js project.
+## Summary
+Successfully installed and configured Vercel Speed Insights for the LemonDrop Next.js application following the latest official documentation from Vercel.
 
-### Changes Made
+## Changes Made
 
-**Modified:**
-- `app/layout.js` - Added the `<Analytics />` component inside the body tag
+### 1. Package Installation
+- **File**: `package.json`
+- **Change**: Added `@vercel/speed-insights` version `^2.0.0` as a dependency
+- **Package Manager**: npm (used npm install as per project's existing package-lock.json)
 
-### Implementation Details
+### 2. Component Integration
+- **File**: `app/layout.js`
+- **Changes**:
+  - Added import: `import { SpeedInsights } from "@vercel/speed-insights/next"`
+  - Added `<SpeedInsights />` component in the body section alongside the existing `<Analytics />` component
+  
+### 3. Lock File Update
+- **File**: `package-lock.json`
+- **Change**: Updated to reflect the new dependency and its sub-dependencies
 
-1. **Framework Identification**: Confirmed this is a Next.js 16.2.1 project using the App Router pattern.
+## Implementation Details
 
-2. **Package Status**: The `@vercel/analytics` package (v2.0.1) was already present in package.json but not properly configured.
+### Framework Detection
+- Identified project as Next.js v16.2.1 (App Router)
+- Used the Next.js-specific integration path: `@vercel/speed-insights/next`
 
-3. **Configuration**: 
-   - The Analytics import from `@vercel/analytics/next` was already present in the layout.js file
-   - Added the `<Analytics />` component inside the `<body>` tag, after the children component
-   - This follows the official Vercel documentation for Next.js App Router applications
+### Component Placement
+Following the official Vercel documentation for Next.js, the `<SpeedInsights />` component was added to the root layout file (`app/layout.js`) within the `<body>` tag. This ensures the Speed Insights tracking is available across all pages of the application.
 
-4. **Verification**:
-   - Build completed successfully with no errors
-   - Linter check on layout.js passed with no issues
-   - No breaking changes introduced to existing functionality
+The component was placed alongside the existing `@vercel/analytics` component, maintaining consistency with the project's existing Vercel integrations.
 
-### Next Steps
+## Verification Steps Completed
 
-To enable analytics tracking:
-1. Deploy the application to Vercel
-2. Enable Web Analytics in your Vercel dashboard under the Analytics section
-3. Analytics data will automatically begin collecting after deployment
+✅ **Build Test**: Ran `npm run build` - Completed successfully with no errors
+✅ **Production Build**: Next.js production build generated successfully
+✅ **TypeScript Check**: Passed (77ms)
+✅ **Static Generation**: All pages generated successfully (4/4 routes)
+✅ **Linter**: Pre-existing linting warnings in `app/page.js` unrelated to our changes
 
-### Technical Notes
+## Next Steps
 
-- Implementation follows the latest Vercel Analytics quickstart guide (fetched from official docs)
-- Analytics component is placed at the end of the body tag for optimal page load performance
-- No additional configuration files or environment variables are required
+To complete the Speed Insights setup:
+
+1. **Enable in Vercel Dashboard**: Navigate to your Vercel project dashboard and enable Speed Insights from the sidebar
+2. **Deploy**: Deploy this update to Vercel (either via `vercel deploy` or through Git integration)
+3. **Monitor**: After deployment and user traffic, Speed Insights data will be available in your Vercel project dashboard
+
+## Notes
+
+- The installation follows the official Vercel Speed Insights quickstart guide (fetched on 2026-04-04)
+- Speed Insights will automatically track Core Web Vitals metrics
+- The component is lightweight and won't impact page performance
+- Data collection begins immediately after deployment to Vercel
+- Compatible with Next.js 13.5+ (project is using 16.2.1)

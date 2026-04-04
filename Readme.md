@@ -3,7 +3,7 @@
 A modern, fully functional disposable email service built with Next.js, Cloudflare Workers, and D1 Database.
 
 ![LemonDrop](https://img.shields.io/badge/LemonDrop-Free%20Disposable%20Email-yellow)
-![Next.js](https://img.shields.io/badge/Next.js-16.2.1-black)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 

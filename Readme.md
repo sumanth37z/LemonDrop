@@ -58,5 +58,13 @@ Emails automatically delete after **1 hour** to keep your privacy intact.
 | Domain | lemondrop.qzz.io |
 | AI Tools | Claude-opus-4-6 |
 
---- 
-|Leveraged AI-pair programming to accelerate frontend development.Code assisted by AI; logic verified and refactored by ME|
+---
+
+|Leveraged AI-pair programming to accelerate frontend development.Code assisted by AI; logic verified and refactored by ME| 
+
+---
+
+---
+⚠️ Disclaimer
+This project is for educational and research purposes only. It was created to explore various tools.
+The author(s) are not responsible for any misuse of this software. Users are strictly prohibited from using this code for any illegal activities, including but not limited to unauthorized access, data breaches, or any form of cyber-attack. Use at your own risk.

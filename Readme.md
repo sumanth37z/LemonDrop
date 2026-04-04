@@ -3,7 +3,7 @@
 A modern, fully functional disposable email service built with Next.js, Cloudflare Workers, and D1 Database.
 
 ![LemonDrop](https://img.shields.io/badge/LemonDrop-Free%20Disposable%20Email-yellow)
-![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
@@ -15,7 +15,7 @@ https://lemon-drop-op.vercel.app/
 
 ---
 
-## 📖 What is LemonDrop?
+## What is LemonDrop?
 
 LemonDrop is a free disposable email service that lets you create temporary email addresses instantly — no signup, no credit card, no personal information required.
 
@@ -29,7 +29,7 @@ Emails automatically delete after **1 hour** to keep your privacy intact.
 
 ---
 
-## ✨ Features
+## Features
 
 - **Instant email address** — Generated automatically on every visit
 - **No signup required** — Just open the site and start using it
@@ -45,7 +45,7 @@ Emails automatically delete after **1 hour** to keep your privacy intact.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|

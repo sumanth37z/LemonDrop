@@ -56,5 +56,7 @@ Emails automatically delete after **1 hour** to keep your privacy intact.
 | Email Routing | Cloudflare Email Routing |
 | Deployment | Vercel (Frontend) + Cloudflare (Backend) |
 | Domain | lemondrop.qzz.io |
+| AI Tools | Claude-opus-4-6 |
 
----
+--- 
+|Leveraged AI-pair programming to accelerate frontend development.Code assisted by AI; logic verified and refactored by ME|
